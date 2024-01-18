@@ -1,3 +1,4 @@
+// 将orb slam3中极线修正部分复现，发现大发散角度下结果确实有问题
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
