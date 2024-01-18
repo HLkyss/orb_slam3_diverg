@@ -11,6 +11,7 @@
 
 <img src="https://github.com/HLkyss/orb_slam3_diverg/assets/69629475/217cb91a-958b-4f97-881b-8cb2cc3c43fd" width="800"> <br />
 <img src="https://github.com/HLkyss/orb_slam3_diverg/assets/69629475/04ff2d25-6ec9-4c08-83e9-089223c7e9df" width="800"> <br />
+一些用到的小程序见stuff文件夹<br />
 ***
 orb slam3注释版，来源：</br>
 https://github.com/electech6/ORB_SLAM3_detailed_comments
