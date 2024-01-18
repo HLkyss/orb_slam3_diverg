@@ -1,0 +1,107 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+Camera.type: "KannalaBrandt8"
+
+##FOV=70
+## 真实值 使用radtan模型真实值转换
+# fx、fy=1168/23.76*16.95=833.23232323。cx=1168/2,cy=657/2
+Camera.fx: 833.23232323
+Camera.fy: 833.23232323
+Camera.cx: 584.0
+Camera.cy: 328.5
+Camera.k1: 0.33326978589738815
+Camera.k2: 0.13357567265442208
+Camera.k3: 0.05504092158690694
+Camera.k4: 0.02153528048257481
+Camera2.fx: 833.23232323
+Camera2.fy: 833.23232323
+Camera2.cx: 584.0
+Camera2.cy: 328.5
+Camera2.k1: 0.33326978589738815
+Camera2.k2: 0.13357567265442208
+Camera2.k3: 0.05504092158690694
+Camera2.k4: 0.02153528048257481
+
+# Transformation matrix from right camera to left camera /media/hl/Stuff/ubuntu_share_2/Dataset/ue_180/calib/get_t.py
+Tlr: !!opencv-matrix
+  rows: 3
+  cols: 4
+  dt: f
+
+  # 5
+  #  # 计算真实值
+  data: [ 0.98480775, 0.0,  0.17364818,  0.19923894,
+          0.0,  1.0,  0.0,  0.0,
+          -0.17364818, 0.0,  0.98480775, -0.01743115 ]
+
+# Lapping area between images (We must calculate) TODO 重叠区域计算，https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/88
+Camera.lappingBegin: 0
+Camera.lappingEnd: 1168 # 1000
+
+Camera2.lappingBegin: 0
+Camera2.lappingEnd: 1168 #设置小了的话，发现运行会失败。可能需要好好标定一下？ 我操了，70度的情况，搞了半天，结果从900改回1000一下就好了
+
+# Camera resolution
+#Camera.width: 1920
+#Camera.height: 1080
+Camera.width: 1168
+Camera.height: 657
+
+# Camera frames per second 
+Camera.fps: 20.0
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Image scale, it changes the image size to be processed (<1.0: reduce, >1.0: increase)
+#Camera.imageScale: 0.7071 # 1/sqrt(2)
+
+# Close/Far threshold. Baseline times.  #用于区分哪些特征点是近点，哪些是远点
+ThDepth: 40.0 #  40 深度阈值，不是一个精确的数值，大概预估的，可以不改动，要改的话参考下述公式:
+  #自己粗略估计一个相机可以良好显示的最大距离值为s = 10  如果fx = 100 Camera.bf = 20
+  #那么 ThDepth = s*fx/Camera.bf = 10 *100 /20 = 50
+  #将你自己的参数带入上述公式 可以得到大概的阈值。
+  #双目关键点的深度如果小于ThDepth倍基线长度的值，就被叫做近关键点，否则就是远关键点。近关键点可以较好的被三角化，并提供尺度，平移，旋转信息。而远关键点可以提供比较好的旋转信息，但只能有比较差的尺度和平移信息，远点用多视角进行三角化。https://blog.csdn.net/catpico/article/details/120688795
+
+# 基线距离（单位：米） * fx（单位：像素） 0.2*338
+Camera.bf: 166.6 #840*0.2 570*0.2 136.8
+
+thFarPoints: 40.0
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+#ORBextractor.nFeatures: 1500 # Tested with 1250   1000
+ORBextractor.nFeatures: 1500 # Tested with 1250   1819
+
+# ORB Extractor: Scale factor between levels in the scale pyramid 	
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid	
+ORBextractor.nLevels: 8 #8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast			
+ORBextractor.iniThFAST: 15 # 20  15 初始阶段的FAST特征点提取的阈值。（增大该值可能会导致更少的特征点被提取，而减小该值可能会导致更多的特征点被提取。） todo 不太对，好像是这个值越大，提取的特征点越多
+ORBextractor.minThFAST: 7 # 7 用于跟踪阶段的FAST特征点提取的阈值
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500

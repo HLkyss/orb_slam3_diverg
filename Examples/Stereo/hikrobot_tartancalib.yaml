@@ -1,0 +1,121 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+Camera.type: "KannalaBrandt8"
+#Camera.type: "PinHole"
+
+# Left Camera calibration and distortion parameters (OpenCV)
+Camera.fx: 322.7187380486818
+Camera.fy: 322.7300759785642
+Camera.cx: 617.8177926316498
+Camera.cy: 480.3907311449141
+
+# Kannala-Brandt distortion parameters
+Camera.k1: 0.03815214734607857
+Camera.k2: -0.012014490793958901
+Camera.k3: -0.0023334252057993343
+Camera.k4: -9.07882688746083e-05
+
+# Right Camera calibration and distortion parameters (OpenCV)
+Camera2.fx: 322.03213646004934
+Camera2.fy: 322.08858537059245
+Camera2.cx: 624.7421342324359
+Camera2.cy: 481.06453284850426
+
+# Kannala-Brandt distortion parameters
+Camera2.k1: 0.03906214965637347
+Camera2.k2: -0.010658973292244666
+Camera2.k3: -0.003804405139613952
+Camera2.k4: 0.00030395662043269505
+    
+# Transformation matrix from right camera to left camera
+Tlr: !!opencv-matrix
+  rows: 3
+  cols: 4
+  dt: f
+#  data: [ 0.9953391533068978, -0.002460634566908601, -0.09640495408346603, -0.08723864068158844,
+#          0.0017280797859485423, 0.9999690038143662, -0.0076814810262640434, 0.00020049836462167033,
+#          0.09642086721535154, 0.007479083368407722, 0.9953125537625893, -0.005187735506479435 ]
+#  data: [ 9.94556971e-01, -2.86078175e-03,  1.04154919e-01, -8.74726400e-02,
+#          3.05934323e-03,  9.99993795e-01, -1.74669752e-03, -7.80220000e-04,
+#          -1.04149276e-01,  2.05583584e-03,  9.94559552e-01, -4.54500000e-03]
+#  data: [ 9.94556971e-01,  3.05934323e-03, -1.04149276e-01, -3.05786940e-03,
+#          -2.86078175e-03,  9.99993795e-01,  2.05583584e-03,  7.79219846e-04,
+#          1.04154919e-01, -1.74669752e-03,  9.94559552e-01,  4.54500000e-03 ]
+#################################################################################
+#  data: [ 9.95268827e-01, 2.08488310e-03, 9.71371002e-02, 8.71955638e-02,
+#          -2.66577359e-03, 9.99979331e-01, 5.85071345e-03, -4.63547317e-04,
+#          -9.71228944e-02, -6.08197823e-03, 9.95253813e-01, -2.99199378e-03]
+#  #这一组由basalt标定得到，提取到了很多特征点，但是跟踪失败 
+  
+#  data: [ 0.9945943103719578, 0.003084285976373092, -0.10379135299118299, -0.08749736864155087,
+#          -0.0028753486548786585, 0.9999935277151092, 0.002162613696120333, -0.0008184072137892556,
+#          0.10379735134307276, -0.0018524869504825245, 0.9945967414717664, -0.004651308459280425] 
+#  #这一组由tartancalib标定得到
+
+  data: [ 0.99459431, -0.00287535, 0.10379735, 0.08750483,
+          0.00308429, 0.99999353, -0.00185249, 0.00107965,
+          -0.10379135, 0.00216261, 0.99459674, -0.00445352] 
+  #这一组由tartancalib标定数据求逆得到
+
+
+# Lapping area between images (We must calculate) TODO 重叠区域计算，https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/88
+Camera.lappingBegin: 0
+Camera.lappingEnd: 1200 # 900
+
+Camera2.lappingBegin: 0
+Camera2.lappingEnd: 1200
+
+# Camera resolution
+Camera.width: 1280
+Camera.height: 1024
+
+# Camera frames per second 
+Camera.fps: 30.0
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Image scale, it changes the image size to be processed (<1.0: reduce, >1.0: increase)
+#Camera.imageScale: 0.7071 # 1/sqrt(2)
+
+# Close/Far threshold. Baseline times.
+ThDepth: 40.0
+# stereo baseline times fx   0.0876*323.03904728
+Camera.bf: 28.3 #18.143917436
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 1000 # Tested with 1250
+
+# ORB Extractor: Scale factor between levels in the scale pyramid 	
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid	
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast			
+ORBextractor.iniThFAST: 15 # 20  15
+ORBextractor.minThFAST: 7 # 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500

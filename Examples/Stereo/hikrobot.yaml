@@ -1,0 +1,105 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!  /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/calibration2
+#--------------------------------------------------------------------------------------------
+Camera.type: "KannalaBrandt8"
+#Camera.type: "PinHole"
+
+# Left Camera calibration and distortion parameters (OpenCV)
+Camera.fx: 322.89011711990025
+Camera.fy: 322.8621140531143
+Camera.cx: 617.9612636387906
+Camera.cy: 480.410407017028
+
+# Kannala-Brandt distortion parameters
+Camera.k1: 0.03397432118786136
+Camera.k2: -0.0016712999472484422
+Camera.k3: -0.01273066277469643
+Camera.k4: 0.0033834557416335346
+
+# Right Camera calibration and distortion parameters (OpenCV)
+Camera2.fx: 322.49379225437326
+Camera2.fy: 322.4603194526012
+Camera2.cx: 624.8337234278449
+Camera2.cy: 481.01197813404514
+
+# Kannala-Brandt distortion parameters
+Camera2.k1: 0.03548610856485736
+Camera2.k2: -0.004189762254616541
+Camera2.k3: -0.009260812458160895
+Camera2.k4: 0.0018201004284605687
+    
+# Transformation matrix from right camera to left camera
+Tlr: !!opencv-matrix
+  rows: 3
+  cols: 4
+  dt: f
+  
+#  data: [ 0.9945690690083187, 0.003020383623689367, -0.10403482231776152, -0.08744792691118825,
+#          -0.002812830014576929, 0.9999937505420889, 0.002141696540530007, -0.0007811461645924609,
+#          0.10404064090167629, -0.001837432863636692, 0.9945713493164964, -0.004488086283860003]
+
+#转置         
+  data: [ 0.99456907, -0.00281283,  0.10404064,  0.08743775,
+          0.00302038,  0.99999375, -0.00183743,  0.00103702,
+          -0.10403482,  0.0021417,   0.99457135, -0.00463223]
+
+# Lapping area between images (We must calculate) TODO 重叠区域计算，https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/88
+Camera.lappingBegin: 0
+Camera.lappingEnd: 900
+
+Camera2.lappingBegin: 0
+Camera2.lappingEnd: 900
+
+# Camera resolution
+Camera.width: 1280
+Camera.height: 1024
+
+# Camera frames per second 
+Camera.fps: 10.0
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Image scale, it changes the image size to be processed (<1.0: reduce, >1.0: increase)
+Camera.imageScale: 0.7071 # 1/sqrt(2)
+
+# Close/Far threshold. Baseline times.
+ThDepth: 40.0
+# stereo baseline times fx   0.0876*323.03904728
+Camera.bf: 28.3 #18.143917436
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 1000 # Tested with 1250
+
+# ORB Extractor: Scale factor between levels in the scale pyramid 	
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid	
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast			
+ORBextractor.iniThFAST: 15 # 20  15
+ORBextractor.minThFAST: 7 # 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500

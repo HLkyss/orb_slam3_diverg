@@ -1,0 +1,145 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/231
+#--------------------------------------------------------------------------------------------
+Camera.type: "PinHole"
+#Camera.type: "KannalaBrandt8"
+
+# Camera calibration and distortion parameters (OpenCV) 
+Camera.fx: 287.5826548042227
+Camera.fy: 288.689522130134
+Camera.cx: 431.1912323777472
+Camera.cy: 410.0983431702325
+
+Camera2.fx: 286.25505982686826
+Camera2.fy: 287.2568743160009
+Camera2.cx: 425.1129584081129
+Camera2.cy: 410.2312577760925
+
+Camera2.k1: -0.006007110574337181
+Camera2.k2: 0.1442707954375068
+Camera2.p1: -0.24531991131814335
+Camera2.p2: 0.12325106984558643
+
+Camera.k1: 0.022029520243352856
+Camera.k2: -0.008229449022489585
+Camera.p1: 0.02459337958206339
+Camera.p2: -0.02422941583564938
+
+Camera.bFishEye: 1
+
+Camera.width: 848
+Camera.height: 800
+
+# Camera frames per second 
+Camera.fps: 30.0
+
+# stereo baseline times fx
+Camera.bf: 37.90639384423901
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Close/Far threshold. Baseline times.
+ThDepth: 40.0
+
+Tlr: !!opencv-matrix
+  rows: 3
+  cols: 4
+  dt: f
+  data: [ 0.9999507917351175, -0.0002489858229629527, 0.009917263451769878, -0.06739775042711899,
+            0.0002618028834294089, 0.9999991322316766, -0.0012911216612427948, -0.00034210407325103206, 
+            -0.009916933374893428, 0.0012936544955534951, 0.9999499891947018, 3.961241231369616e-05]
+
+# Lapping area between images
+Camera.lappingBegin: 0
+Camera.lappingEnd: 511
+
+Camera2.lappingBegin: 0
+Camera2.lappingEnd: 511
+
+#--------------------------------------------------------------------------------------------
+# Stereo Rectification. Only if you need to pre-rectify the images.
+# Camera.fx, .fy, etc must be the same as in LEFT.P
+#--------------------------------------------------------------------------------------------
+LEFT.height: 800
+LEFT.width: 848
+LEFT.D: !!opencv-matrix
+   rows: 1
+   cols: 5
+   dt: d
+   data: [-0.0035083070397377014, 0.040062401443719864, -0.03780487924814224, 0.006653175223618746, 0.0]
+LEFT.K: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [285.39599609375, 0.0, 428.7572937011719, 0.0, 286.3768005371094, 410.7749938964844, 0.0, 0.0, 1.0] 
+LEFT.R:  !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+LEFT.P:  !!opencv-matrix
+   rows: 3
+   cols: 4
+   dt: d
+   data: [285.39599609375, 0.0, 428.7572937011719, 0.0, 0.0, 286.3768005371094, 410.7749938964844, 0.0, 0.0, 0.0, 1.0, 0.0]
+
+RIGHT.height: 800
+RIGHT.width: 848
+RIGHT.D: !!opencv-matrix
+   rows: 1
+   cols: 5
+   dt: d
+   data: [-0.003943577874451876, 0.04089004918932915, -0.0393802784383297, 0.007030018139630556, 0.0]
+RIGHT.K: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [284.12689208984375, 0.0, 426.5628967285156, 0.0, 285.0443115234375, 410.5220031738281, 0.0, 0.0, 1.0]
+RIGHT.R:  !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+RIGHT.P:  !!opencv-matrix
+   rows: 3
+   cols: 4
+   dt: d
+   data: [284.12689208984375, 0.0, 426.5628967285156, 0.0, 0.0, 285.0443115234375, 410.5220031738281, 0.0, 0.0, 0.0, 1.0, 0.0]
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 1200
+
+# ORB Extractor: Scale factor between levels in the scale pyramid 	
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid	
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast			
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize:2
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500
+

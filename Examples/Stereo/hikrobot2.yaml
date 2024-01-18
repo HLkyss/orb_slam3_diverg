@@ -1,0 +1,128 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+Camera.type: "PinHole"
+
+# Left Camera calibration and distortion parameters (OpenCV)
+#双目标定结果
+#Camera2.fx: 323.01670661
+#Camera2.fy: 323.41308708
+#Camera2.cx: 623.44483594
+#Camera2.cy: 485.37797717
+#单目标定结果
+Camera.fx: 319.90944492
+Camera.fy: 319.95799057
+Camera.cx: 616.88157528
+Camera.cy: 482.01622945
+
+# Kannala-Brandt distortion parameters
+#双目标定结果
+#Camera2.k1: 0.02728532
+#Camera2.k2: 0.00451059
+#Camera2.k3: -0.0126415
+#Camera2.k4: 0.00217209
+#单目标定结果
+Camera.k1: -0.23532148
+Camera.k2: 0.04358389
+Camera.p1: -0.00073274
+Camera.p2: 0.00016112
+
+# Right Camera calibration and distortion parameters (OpenCV)
+#双目标定结果
+#Camera.fx: 324.88468135
+#Camera.fy: 324.74117545
+#Camera.cx: 619.4796474
+#Camera.cy: 480.82099526
+#单目标定结果
+Camera2.fx: 317.56751739
+Camera2.fy: 318.11981631
+Camera2.cx: 616.66438098
+Camera2.cy: 484.764114
+
+# Kannala-Brandt distortion parameters
+#双目标定结果
+#Camera.k1: 0.02728532
+#Camera.k2: 0.00451059
+#Camera.k3: -0.0126415
+#Camera.k4: 0.00217209
+#单目标定结果
+Camera2.k1: -0.20742079
+Camera2.k2: 0.02919784
+Camera2.p1: -0.00038348
+Camera2.p2: 0.00070785
+    
+# Transformation matrix from right camera to left camera
+Tlr: !!opencv-matrix
+  rows: 3
+  cols: 4
+  dt: f
+#  data: [ 0.9953391533068978, -0.002460634566908601, -0.09640495408346603, -0.08723864068158844,
+#          0.0017280797859485423, 0.9999690038143662, -0.0076814810262640434, 0.00020049836462167033,
+#          0.09642086721535154, 0.007479083368407722, 0.9953125537625893, -0.005187735506479435 ]
+  data: [ 9.94556971e-01, -2.86078175e-03,  1.04154919e-01, -8.74726400e-02,
+          3.05934323e-03,  9.99993795e-01, -1.74669752e-03, -7.80220000e-04,
+          -1.04149276e-01,  2.05583584e-03,  9.94559552e-01, -4.54500000e-03]
+#  data: [ 9.94560965e-01, 2.85869724e-03, -1.04152772e-01, -2.93788864e-04,
+#          8.74747867e-02, -3.05912777e-03, -9.94553716e-01, 4.55859144e-03,
+#          -1.04216192e-01, 1.74597172e-03, -9.94548072e-01, 1.82681798e-04 ]
+
+# Lapping area between images (We must calculate) TODO 重叠区域计算，https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/88
+Camera.lappingBegin: 0
+Camera.lappingEnd: 1200
+
+Camera2.lappingBegin: 0
+Camera2.lappingEnd: 1200
+
+# Camera resolution
+Camera.width: 1280
+Camera.height: 1024
+
+# Camera frames per second 
+Camera.fps: 10.0
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Image scale, it changes the image size to be processed (<1.0: reduce, >1.0: increase)
+Camera.imageScale: 0.7071 # 1/sqrt(2)
+
+# Close/Far threshold. Baseline times.
+ThDepth: 40.0
+# stereo baseline times fx   0.0876*323.03904728
+Camera.bf: 28.3 #18.143917436
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 1000 # Tested with 1250
+
+# ORB Extractor: Scale factor between levels in the scale pyramid 	
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid	
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast			
+ORBextractor.iniThFAST: 15 # 20  15
+ORBextractor.minThFAST: 7 # 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500

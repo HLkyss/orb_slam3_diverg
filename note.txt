@@ -1,0 +1,329 @@
+V1
+此工程作为备份，非特殊情况不要修改
+
+此代码为了能在发散双目和发散鱼眼情况下成功跑通，不跟丢。
+对源码的主要更改：
+加了c_new条件，在特征点少时强制添加关键帧，防止跟丢
+初始化时单独设置前几帧每张图特征点提取数量，保证大角度发散时在较小共视区域仍有足够点初始化
+个别位置的调参，如鱼眼相机时暴力匹配参数调整
+
+具体可以搜索diy等字眼
+
+------------------------------------------------------------------
+注释版，来源：
+https://github.com/electech6/ORB_SLAM3_detailed_comments
+________________________________________________________________
+
+双鱼眼相机程序：
+/home/hl/project/camera/hik_cam_ros/hik_3_ws/devel/lib/mvs_image_ros/pub_image_dual_trigger
+录数据集：
+rosbag record /camera/left/image_raw /camera/right/image_raw
+
+运行示例：
+1. Monocular:
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master
+
+运行EuRoc数据集中的MH_01_easy：
+./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/EuRoc/MH01 ./Examples/Monocular/EuRoC_TimeStamps/MH01.txt dataset-MH01_mono 
+
+运行KITTI数据集中的sequences_05：
+./Examples/Monocular/mono_kitti ./Vocabulary/ORBvoc.txt ./Examples/Monocular/KITTI04-12.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/KITTI/data_odometry_gray/dataset/sequences/05
+
+（如果不显示图形界面：https://blog.csdn.net/changym5/article/details/125041396）
+
+2. Monocular-Inertial:
+
+cd /home/hl/project/ORB_SLAM3
+
+运行EuRoc数据集中的MH_01_easy：
+./Examples/Monocular-Inertial/mono_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular-Inertial/EuRoC.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/EuRoc/MH01 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_monoi
+
+运行TUM数据集中的magistrale1：
+./Examples/Monocular-Inertial/mono_inertial_tum_vi \
+Vocabulary/ORBvoc.txt \
+Examples/Monocular-Inertial/TUM_512.yaml \
+/media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam0/data \
+Examples/Monocular-Inertial/TUM_TimeStamps/dataset-magistrale1_512.txt \
+Examples/Monocular-Inertial/TUM_IMU/dataset-magistrale1_512.txt \
+dataset-magistrale1_512_monoi
+
+3. Stereo
+
+cd /home/hl/project/ORB_SLAM3
+
+运行EuRoc数据集中的MH_01_easy：
+./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo/EuRoC.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/EuRoc/MH01 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/MH01.txt dataset-MH01_monoi
+
+运行KITTI数据集中的sequences_05：（失败）
+./Examples/Stereo/stereo_kitti ./Vocabulary/ORBvoc.txt ./Examples/Stereo/KITTI04-12.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/KITTI/data_odometry_gray/dataset/sequences/05
+
+尝试使用tum-vi但只用双鱼眼不用imu(失败）
+./Examples/Stereo/stereo_realsense_t265 Vocabulary/ORBvoc.txt Examples/Stereo/RealSense_T265.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam0/data /media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam1/data Examples/Stereo-Inertial/TUM_TimeStamps/dataset-magistrale1_512.txt Examples/Stereo-Inertial/TUM_IMU/dataset-magistrale1_512.txt dataset-magistrale1_512_stereo
+
+
+4. Stereo-Inertial
+
+cd /home/hl/project/ORB_SLAM3/Examples/Stereo-Inertial
+
+运行EuRoc数据集中的MH_04_difficult：
+./stereo_inertial_euroc ../../Vocabulary/ORBvoc.txt ./EuRoC.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/EuRoc/MH_04_difficult ./EuRoC_TimeStamps/MH04.txt mh04_results
+（解释：./stereo_inertial_euroc path_to_vocabulary path_to_settings path_to_sequence_folder_1 path_to_times_file_1 save_file_name）
+
+运行TUM数据集中的magistrale1：
+./Examples/Stereo-Inertial/stereo_inertial_tum_vi Vocabulary/ORBvoc.txt Examples/Stereo-Inertial/TUM_512.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam0/data /media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam1/data Examples/Stereo-Inertial/TUM_TimeStamps/dataset-magistrale1_512.txt Examples/Stereo-Inertial/TUM_IMU/dataset-magistrale1_512.txt dataset-magistrale1_512_stereo
+
+
+教程：
+http://zhaoxuhui.top/blog/2020/09/30/orb-slam3-cmake-ros-compilation-and-test.html#:~:text=3.ORB-SLAM3%E7%9A%84ROS%E7%BC%96%E8%AF%91%20%E5%A6%82%E5%89%8D%E9%9D%A2%E6%8F%90%E5%88%B0%E7%9A%84ORB-SLAM3%E4%B9%9F%E6%9C%89ROS%E5%AF%B9%E5%BA%94%E7%9A%84%E7%89%88%E6%9C%AC%E3%80%82,%E5%AF%B9%E5%BA%94%20Examples%2FROS%2FORB_SLAM3%20%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8B%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E5%8C%85%E6%8B%ACMono%E3%80%81MonoAR%E3%80%81RGBD%E5%92%8CStereo%E3%80%82
+
+最后在/home/hl/project/ORB_SLAM3/Examples/Stereo-Inertial生成两个txt文件，一个是每一帧的位姿，一个是关键帧的位姿。（f_mh04_results.txt kf_mh04_results.txt）
+
+（补充：VI
+运行TUM数据集中的magistrale1：
+cd /home/hl/project/ORB_SLAM3
+sh ./tum_vi_examples.sh）
+
+----------------------------------------------------------------------------------------------------
+ros
+
+1. mono
+
+roscore
+
+rosrun topic_tools throttle messages /cam0/image_raw 20.0 /camera/image_raw
+(rosrun topic_tools throttle messages /cam0/image_raw 20.0 /camera/left/image_raw
+rosrun topic_tools throttle messages /cam1/image_raw 20.0 /camera/right/image_raw)
+
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/EuRoc
+rosbag play MH_03_medium.bag
+(rosbag play --pause "MH_03_medium.bag" /cam0/image_raw:=/camera/image_raw /imu0:=/imu)
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Mono /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Monocular/EuRoC.yaml
+
+(解释：rosrun ORB_SLAM3 Mono PATH_TO_VOCABULARY PATH_TO_SETTINGS_FILE do_rectify)
+
+2. mono imu
+
+roscore
+
+cd /home/hl/data/Dataset/EuRoc
+rosbag play --pause "MH_03_medium.bag" /cam0/image_raw:=/camera/image_raw /imu0:=/imu
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Mono_Inertial /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Monocular-Inertial/EuRoC.yaml
+
+3. mono fisheye
+运行自己的海康相机数据集
+roscore
+
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/fisheye_video
+rosbag play --pause "single_far_1_2023-06-07-20-39-02.bag" /hikrobot_camera/rgb:=/camera/image_raw
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Mono /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Monocular/hikrobot.yaml
+
+成功
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3/Examples/ROS
+rosrun ORB_SLAM3 Mono /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Monocular/hikrobot_right.yaml
+
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot
+rosbag play mono_dorm2023-10-29-10-39-38.bag
+
+
+4.stereo fisheye
+运行自己的海康相机数据集
+roscore
+
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel
+rosbag play --pause "2023-11-21-11-44-56.bag" /HikImage_left:=/camera/right/image_raw /HikImage_right:=/camera/left/image_raw
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot.yaml false
+
+ONLINE_RECTIFICATION
+遇到问题：没有或者很少特征点
+针孔模型和kb模型都不太行，针孔模型能得到稍多一点的特征点，kb模型几乎没有特征点。
+_________________________________________________________________________________________________________
+hikrobot_normal:这个是非鱼眼镜头的数据集，用radial模型，这个成功了，效果还行
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_normal
+rosbag play 2023-11-25-21-37-59.bag
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_normal2.yaml false
+
+但是似乎如果要更好的结果，应该打开在线图像修正才对，不过这还要补充更多标定参数：（还没搞）
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_normal2.yaml true
+——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——
+测试网上的t265数据集:
+cd /media/hl/Stuff/ubuntu_share_2/Dataset
+rosbag play --pause 2019-07-09-09-20-08_RealsenseT265_on_a_car.bag /camera/fisheye1/image_raw:=/camera/left/image_raw /camera/fisheye2/image_raw:=/camera/right/image_raw
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/RealSense_T265_2.yaml false
+用针孔可以，kb不可以，怀疑是标定不准。具体见下面github issues。
+——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——
+打算把TUM-VI的数据制作成双目rosbag，用官方提供的标定结果测试两个相机模型。成功，一点问题没有
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/TUM/make_rosbag
+rosbag play --pause tum_stereo.bag /cam0/image_raw:=/camera/left/image_raw /cam1/image_raw:=/camera/right/image_raw
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/tum_vi_stereo.yaml false
+
+这个运行一点问题没有，说明不是代码不支持，就是yaml文件的问题
+——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_
+
+想试一下t265，只用双目:
+./Examples/Stereo/stereo_tum_vi Vocabulary/ORBvoc.txt Examples/Stereo/TUM_512.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam0/data /media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam1/data Examples/Stereo-Inertial/TUM_TimeStamps/dataset-magistrale1_512.txt Examples/Stereo-Inertial/TUM_IMU/dataset-magistrale1_512.txt dataset-magistrale1_512_stereo
+装好了t265需要的环境，编译好了orb相应部分代码，但是没有t265相机，无法运行测试。
+
+-----------------------------------------------------------------------------------
+重新标定:（更多细节见每个标定结果所在的文件夹）
+source /home/hl/project/kalibr_ws/devel/setup.bash
+
+cd /home/hl/project/gray_img_publish_ws/src/image_to_gray/src
+python3 extract_from_2_topics.py
+
+rosrun kalibr kalibr_bagcreater --folder /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/calibration2/img/. --output-bag /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/calibration2/calibrate.bag
+
+export KALIBR_MANUAL_FOCAL_LENGTH_INIT=320
+
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/calibration2
+rosrun kalibr kalibr_calibrate_cameras --bag /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/calibration2/calibrate.bag --topics /cam0/image_raw /cam1/image_raw --models pinhole-equi pinhole-equi --target /home/hl/kalibr_workspace/src/kalibr/april_6x6.yaml --show-extraction
+
+标定针孔:
+就用calibration2的图片，只是换一下相机模型
+rosrun kalibr kalibr_calibrate_cameras --bag /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/calibration3/calibrate.bag --topics /cam0/image_raw /cam1/image_raw --models pinhole-radtan pinhole-radtan --target /home/hl/kalibr_workspace/src/kalibr/april_6x6.yaml --show-extraction
+
+这些标定结果放在了hik数据集文件夹里，后面其他的标定结果放在了使用的标定工具的工作目录
+_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——_——
+用basalt标定结果测试鱼眼：
+near parallel：
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel
+rosbag play --pause "2023-11-21-11-44-56.bag" /HikImage_left:=/camera/right/image_raw /HikImage_right:=/camera/left/image_raw
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_basalt.yaml false
+初始能够得到较多的特征点，但是跟踪会丢
+———————————————————————————————————————————————————————————————————————————————————
+用basalt标定的normal试一下
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_normal
+rosbag play 2023-11-25-21-37-59.bag
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_normal_basalt.yaml false
+这个成功了！！！！！！！！！！！！！！！！！！！！！！！
+测试了两个数据集，都出现了效果很不错的情况，但是也有失败的时候，效果/media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_normal/orb3_stereo_hik_normal_basalt_kb.mp4
+
+———————————————————————————————————————————————————————————————————————————————————
+用tartancalib标定结果测试鱼眼：
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel
+rosbag play --pause "2023-11-21-11-44-56.bag" /HikImage_left:=/camera/right/image_raw /HikImage_right:=/camera/left/image_raw
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_tartancalib.yaml false
+
+结果一样，开始能识别到很多特征点，但是无法跟踪
+———————————————————————————————————————————————————————————————————————————————————
+重新装回鱼眼相机，用之前录的数据集的tartancalib标定结果，采集帧率调高，镜头更靠近成像平面一点使远处场景更清晰，成功了，效果非常好
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel
+rosbag play peace.bag
+shake1 shake3完整跑通过
+
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_tartancalib.yaml false
+
+但是没控制变量，不知道主要因素是什么，于是测试：
+1.改回之前的标定结果测试，basalt可用（重投影误差），kailbr不可用（平均重投影误差0.6左右）。
+	最大重投影误差（大致）： tartancalib=0.6, basalt=0.8, kalibr=1.2
+  因此，标定精度有影响
+2.之前的数据集是1hz的，现在成功的数据集是10hz的。现从10hz改回1hz，新数据集可用，
+  老数据集仍不可用（初始特征点数量足够，但跟踪失败）。老数据集1hz，相邻帧之间运动较大，不太行
+  因此频率不是大问题，只要别太小了导致相邻帧之间运动过大，特征点丢失。
+3.更改相机成像清晰度（镜头和成相平面的距离）
+其实感觉差别不大，只是视觉上让他更清晰了。
+由于更换过镜头，无法复现老数据集录制时的镜头安装情况，在现在的基础上将镜头拉远，使成像稍微模糊一些，
+经过测试，效果也不错。
+注意，这几次用的标定参数都是最开始老数据集标定的参数，因此说明镜头距离对内参的影响不大。
+
+———————————————————————————————————————————————————————————————————————————————————
+问题:特征点太少
+https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/297:使用PinHole模型，标定图像修正参数
+https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/221
+https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/47:分别运行两个单目没问题，说明内参肯定没问题，那就是外参的问题，是否反了。并且也出现了右目彩色的问题
+https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/231:根据这个解答，找了一个网上用pinhole标定的t265.yaml，特征点没问题了，不过跟踪不太好，正如issue里说的一样。
+感觉就是标定的问题
+
+——————————————————————————————————————————————————————————————————————————————————
+——————————————————————————————————————————————————————————————————————————————————
+segmentation fault问题：
+运行大抖动数据集会报错：
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel
+rosbag play shake_30hz_1.bag
+(1中度 2重度 3中度但是很短，3可以成功但是偶尔也会segmentation fault)
+
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_tartancalib.yaml false
+
+不用ros，读取文件夹图片测试，用于调试：
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+./Examples/Stereo/stereo_tum_vi Vocabulary/ORBvoc.txt Examples/Stereo/hikrobot_tartancalib.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/shake_30hz_3/cam0 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/shake_30hz_3/cam1 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/shake_30hz_3/time.txt  dataset-hik_stereo-traj
+
+./Examples/Stereo/stereo_tum_vi Vocabulary/ORBvoc.txt Examples/Stereo/hikrobot_tartancalib.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/peace/cam0 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/peace/cam1 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/peace/time.txt  dataset-hik_stereo-traj
+
+在clion中的配置：
+peace:
+/home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_tartancalib.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/peace/cam0 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/peace/cam1 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot/near_parallel/peace/time.txt  /home/hl/project/ORB_SLAM3_detailed_comments-master/dataset-hik_stereo-traj
+
+原：
+./Examples/Stereo-Inertial/stereo_inertial_tum_vi 
+Vocabulary/ORBvoc.txt 
+Examples/Stereo-Inertial/TUM_512.yaml 
+/media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam0/data 
+/media/hl/Stuff/ubuntu_share_2/Dataset/TUM/TUM_VI/magistrale/dataset-magistrale1_512_16/mav0/cam1/data 
+Examples/Stereo-Inertial/TUM_TimeStamps/dataset-magistrale1_512.txt 
+Examples/Stereo-Inertial/TUM_IMU/dataset-magistrale1_512.txt 
+dataset-magistrale1_512_stereo
+
+——————————————————————————————————————————————————————————————————————————————————
+——————————————————————————————————————————————————————————————————————————————————
+使用新的180度镜头
+
+ros:还是会有segmentation fault
+cd /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_180
+rosbag play hik_180_2.bag
+
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS/ORB_SLAM3
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+rosrun ORB_SLAM3 Stereo /home/hl/project/ORB_SLAM3_detailed_comments-master/Vocabulary/ORBvoc.txt /home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/Stereo/hikrobot_tartan_180.yaml false
+
+文件夹:一样的问题，没多久就寄
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+./Examples/Stereo/stereo_tum_vi Vocabulary/ORBvoc.txt Examples/Stereo/hikrobot_tartan_180.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_180/hik_180_2/cam0 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_180/hik_180_2/cam1 /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_180/hik_180_2/time.txt  /media/hl/Stuff/ubuntu_share_2/Dataset/hikrobot_180/hik_180_2/dataset-hik_stereo-traj
+
+ros下，调参，增大特征点数量为3000，并提高iniThFAST为30，
+新错误：virtual int g2o::SparseOptimizer::optimize(int, bool): 0 vertices to optimize, maybe forgot to call initializeOptimization()
+https://github.com/raulmur/ORB_SLAM2/issues/463：sometimes, if points are regarded as outliers in trackmotionmodel(), there are not enough points in tracklocalmap()'s poseoptimization() function.
+
+新参数：2500 10 7
+发现出现Segmentation fault (core dumped)的地方基本上都是因为Fail to track local map!
+打算以此为切入点看代码，找问题
+——————————————————————————————————————————————————————————————————————————————————
+——————————————————————————————————————————————————————————————————————————————————
+ue仿真环境：
+cd /home/hl/project/ORB_SLAM3_detailed_comments-master
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/hl/project/ORB_SLAM3_detailed_comments-master/Examples/ROS
+./Examples/Stereo/stereo_tum_vi Vocabulary/ORBvoc.txt Examples/Stereo/ue_180.yaml /media/hl/Stuff/ubuntu_share_2/Dataset/ue_180/70_degree/left /media/hl/Stuff/ubuntu_share_2/Dataset/ue_180/70_degree/right /media/hl/Stuff/ubuntu_share_2/Dataset/ue_180/time.txt  /media/hl/Stuff/ubuntu_share_2/Dataset/ue_180/70_degree/dataset-hik_stereo-traj
+
